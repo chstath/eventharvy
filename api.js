@@ -25,20 +25,30 @@ var router = exports.router = function (app) {
 
 var pollSources = exports.pollSources = function(res) {
     console.log("Polling sources...");
+    var sourceIndex = 0;
+    pollSingleSource(sourceIndex);
+}
+
+var pollSingleSource = function (sourceIndex) {
+    if (sourceIndex >= sources.length)
+        return;
+    console.log("Poling source " + sourceIndex + " " + sources[sourceIndex].name);
     var http = require('http');
-    var google = http.createClient(80, 'www.google.com');
-    var request = google.request('GET', '/calendar/feeds/g66phdocfd8cmc0bssii0dfk6g%40group.calendar.google.com/public/full?alt=json',
-      {'host': 'www.google.com'});
+    var client = http.createClient(80, 'www.google.com');
+    var request = client.request('GET', sources[sourceIndex].path,
+      {'host': sources[sourceIndex].host});
     request.end();
     request.on('response', function (response) {
       console.log('STATUS: ' + response.statusCode);
       console.log('HEADERS: ' + JSON.stringify(response.headers));
       response.setEncoding('utf8');
       response.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-        if (res)
-            sendResult(res);
+//      console.log('BODY: ' + chunk);
+//        if (res)
+//            sendResult(res);
       });
+      sourceIndex++;
+      pollSingleSource(sourceIndex)
     });
 }
 

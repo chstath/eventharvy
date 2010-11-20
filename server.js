@@ -27,5 +27,5 @@ process.addListener('uncaughtException', function (err) {
 });
 
 api.pollSources();
-setInterval(api.pollSources, 30000);
+setInterval(api.pollSources, 120000);
 
