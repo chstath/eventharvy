@@ -16,8 +16,7 @@ var makeICalendar = exports.makeICalendar = function (event) {
 		'PRODID:jquery.icalendar\n' +
 		'METHOD:PUBLISH\n' +
 		'BEGIN:VEVENT\n' +
-		'UID:' + new Date().getTime() + '@' +
-		(window.location.href.replace(/^[^\/]*\/\/([^\/]*)\/.*$/, '$1') || 'localhost') + '\n' +
+		'UID:' + new Date().getTime() + '@' + 'eventharvy' + '\n' +
 		'DTSTAMP:' + formatDateTime(new Date()) + '\n' +
 		(event.url ? limit75('URL:' + event.url) + '\n' : '') +
 		(event.contact ? limit75('MAILTO:' + event.contact) + '\n' : '') +
@@ -49,7 +48,7 @@ var formatDateTime = function (dateTime, local) {
 /* Ensure a string has at least two digits.
    @param  value  (number) the number to convert
    @return  (string) the string equivalent */
-var _ensureTwo = function(value) {
+var ensureTwo = function(value) {
 	return (value < 10 ? '0' : '') + value;
 };
 

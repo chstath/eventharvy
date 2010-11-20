@@ -79,6 +79,20 @@ var pollSingleSource = function (sourceIndex) {
                     description: description,
                     pubDate: pubDate
                 };
+
+                // Generate iCalendar version.
+                var event = {};
+                event.url = link;
+                //event.contact = newItem.;
+                event.title = newItem.title;
+                event.summary = newItem.description;
+                event.description = newItem.description;
+                //event.location = newItem.;
+                //event.recurrence = newItem.;
+                event.start = newItem.time;
+                //event.end = newItem.;
+                result = createIcal(event);
+                console.log(result);
             }
             var result=jsonxml.obj_to_xml(item);
             console.log(result);
@@ -138,6 +152,6 @@ var sendError = function (res, status, data, extraHeaders) {
 };
 
 var createIcal = function (event) {
-    return require("icalendar").makeICalendar(event);
+    return require("./icalendar").makeICalendar(event);
 };
 
