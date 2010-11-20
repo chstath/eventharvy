@@ -1,3 +1,20 @@
+var sources = [
+    {
+        name: 'OpenCoffee',
+        port: 80,
+        host: 'www.google.com',
+        method: 'GET',
+        path: '/calendar/feeds/g66phdocfd8cmc0bssii0dfk6g%40group.calendar.google.com/public/full?alt=json'
+    },
+    {
+        name: 'Olympiakos',
+        port: 80,
+        host: 'www.google.com',
+        method: 'GET',
+        path: '/calendar/feeds/gree_6449_%4flympiakos#sports@group.v.calendar.google.com/public/full?alt=json'
+    }
+];
+
 // The router for the api requests.
 var router = exports.router = function (app) {
 	// Request for bootstrapping actions.
