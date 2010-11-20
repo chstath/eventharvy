@@ -79,6 +79,32 @@ var pollSingleSource = function (sourceIndex) {
                     description: description,
                     pubDate: pubDate
                 };
+
+                // Generate event time.
+                var dateElems = eventDate.split('/');
+                console.log('dateElems: ' + dateElems);
+                var timeElems = eventTime.split('-');
+                console.log('timeElems: ' + timeElems);
+                var startTimelems, start;
+                startTimeElems = timeElems[0].split(':');
+                console.log('startTimeElem[0]: ' + isNaN(startTimeElems[0]));
+                if (isNaN(startTimeElems[0]))
+                    start = new Date(dateElems[2], dateElems[1], dateElems[0]);
+                else
+                    start = new Date(dateElems[2], dateElems[1], dateElems[0], startTimeElems[0], startTimeElems[1]);
+                // Generate iCalendar version.
+                var event = {};
+                event.url = link;
+                //event.contact = newItem.;
+                event.title = newItem.title;
+                event.summary = newItem.description;
+                event.description = newItem.description;
+                //event.location = newItem.;
+                //event.recurrence = newItem.;
+                event.start = start; //newItem.pubDate;
+                //event.end = (end && !isNaN(end)) || '';
+                result = createIcal(event);
+                console.log(result);
             }
             var result=jsonxml.obj_to_xml(item);
             console.log(newItem);
@@ -137,6 +163,6 @@ var sendError = function (res, status, data, extraHeaders) {
 };
 
 var createIcal = function (event) {
-    return require("icalendar").makeICalendar(event);
+    return require("./icalendar").makeICalendar(event);
 };
 
