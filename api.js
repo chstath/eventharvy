@@ -62,14 +62,14 @@ var pollSingleSource = function (sourceIndex) {
         else {
             for (var i=0; i<dom.items.length; i++) {
                 var item = dom.items[i];
-                var rawTitle = item.title.substring(8, item.title.length-2);
+                var rawTitle = item.title.substring(item.title.length-2)==']]' ? item.title.substring(8, item.title.length-2) : item.title.substring(8).trim();
                 var title = rawTitle.substring(0, rawTitle.indexOf(':')).trim();
                 var arr = rawTitle.substring(rawTitle.indexOf(':') + 1).split(',');
                 var eventDate = arr[0] ? arr[0].trim() : '';
                 var eventTime = arr[1] ? arr[1].trim() : '';
                 var eventTitle = arr[2] ? arr[2].trim() : '';
                 var link = item.link.substring(8, item.link.length-2).trim();
-                var description = item.description.substring(8, item.description.length-2).trim();
+                var description = item.description.substring(item.description.length-2)==']]' ? item.description.substring(8, item.description.length-2).trim() : item.description.substring(8).trim();
                 var pubDate = item.pubDate;
                 var newItem = {
                     category: title,
@@ -95,7 +95,7 @@ var pollSingleSource = function (sourceIndex) {
                 console.log(result);
             }
             var result=jsonxml.obj_to_xml(item);
-            console.log(result);
+            console.log(newItem);
         }
     });
     var rss = new htmlparser.Parser(rssHandler);
@@ -117,7 +117,6 @@ var pollSingleSource = function (sourceIndex) {
 //            sendResult(res);
         });
         response.on('end', function () {
-            console.log(rssData);
             rss.parseComplete(rssData);
             sourceIndex++;
             pollSingleSource(sourceIndex)
