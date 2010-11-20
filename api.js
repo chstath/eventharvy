@@ -1,25 +1,35 @@
+var rss = require('./node-rss/node-rss');
 var sources = [
-    {
-        name: 'OpenCoffee',
+//    {
+//        name: 'OpenCoffee',
+//        port: 80,
+//        host: 'www.google.com',
+//        method: 'GET',
+//        path: '/calendar/feeds/g66phdocfd8cmc0bssii0dfk6g%40group.calendar.google.com/public/full?alt=json'
+//    },
+//    {
+//        name: 'Bike Events',
+//        port: 80,
+//        host: 'www.google.com',
+//        method: 'GET',
+//        path: '/calendar/feeds/f6hvf5f7nuqh5spg4ntta04dqg@group.calendar.google.com/public/full?alt=json'
+//    },
+//    {
+//        name: 'Olympiakos',
+//        port: 80,
+//        host: 'www.google.com',
+//        method: 'GET',
+//        path: '/calendar/feeds/gree_6449_%4flympiakos#sports@group.v.calendar.google.com/public/full?alt=json'
+//    },
+     {
+        name: 'Goethe',
         port: 80,
-        host: 'www.google.com',
+        host: 'http://rss.goethe.de',
+        type: 'rss',
         method: 'GET',
-        path: '/calendar/feeds/g66phdocfd8cmc0bssii0dfk6g%40group.calendar.google.com/public/full?alt=json'
+        path: '/?lang=el&land=gr&ins=ath&typ=v'
     },
-    {
-        name: 'Bike Events',
-        port: 80,
-        host: 'www.google.com',
-        method: 'GET',
-        path: '/calendar/feeds/f6hvf5f7nuqh5spg4ntta04dqg@group.calendar.google.com/public/full?alt=json'
-    },
-    {
-        name: 'Olympiakos',
-        port: 80,
-        host: 'www.google.com',
-        method: 'GET',
-        path: '/calendar/feeds/gree_6449_%4flympiakos#sports@group.v.calendar.google.com/public/full?alt=json'
-    }
+ 
 ];
 
 // The router for the api requests.
@@ -39,24 +49,40 @@ var pollSources = exports.pollSources = function(res) {
 var pollSingleSource = function (sourceIndex) {
     if (sourceIndex >= sources.length)
         return;
-    console.log("Poling source " + sourceIndex + " " + sources[sourceIndex].name);
-    var http = require('http');
-    var client = http.createClient(80, 'www.google.com');
-    var request = client.request('GET', sources[sourceIndex].path,
-      {'host': sources[sourceIndex].host});
-    request.end();
-    request.on('response', function (response) {
-      console.log('STATUS: ' + response.statusCode);
-      console.log('HEADERS: ' + JSON.stringify(response.headers));
-      response.setEncoding('utf8');
-      response.on('data', function (chunk) {
-//      console.log('BODY: ' + chunk);
-//        if (res)
-//            sendResult(res);
-      });
-      sourceIndex++;
-      pollSingleSource(sourceIndex)
-    });
+    console.log("Polling source " + sourceIndex + " " + sources[sourceIndex].name);
+    if (sources[sourceIndex].type == 'rss') {
+        rss.parseURL(sources[sourceIndex].host + sources[sourceIndex].path, function(articles) {
+            console.log(articles.length);
+            for(i=0; i<articles.length; i++) {
+                console.log("Article: "+i+", "+
+                articles[i].title+"\n"+
+                articles[i].link+"\n"+
+                articles[i].description+"\n"+
+                articles[i].content
+                );
+            }
+        });    
+    }
+    else {
+        var http = require('http');
+        var client = http.createClient(80, sources[sourceIndex].host);
+        var request = client.request('GET', sources[sourceIndex].path,
+          {'host': sources[sourceIndex].host});
+        request.end();
+        request.on('response', function (response) {
+          console.log('STATUS: ' + response.statusCode);
+          console.log('HEADERS: ' + JSON.stringify(response.headers));
+          response.setEncoding('utf8');
+          response.on('data', function (chunk) {
+          console.log('BODY: ' + chunk);
+          
+    //        if (res)
+    //            sendResult(res);
+          });
+          sourceIndex++;
+          pollSingleSource(sourceIndex)
+        });
+    }
 }
 
 // Helper function to send the result.

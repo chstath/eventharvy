@@ -1,0 +1,3 @@
+[submodule "node-rss"]
+	path = node-rss
+	url = git://github.com/ibrow/node-rss.git
