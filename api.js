@@ -89,7 +89,7 @@ var pollSingleSource = function (sourceIndex) {
                 event.description = newItem.description;
                 //event.location = newItem.;
                 //event.recurrence = newItem.;
-                event.start = newItem.time;
+                event.start = newItem.pubDate;//newItem.date;
                 //event.end = newItem.;
                 result = createIcal(event);
                 console.log(result);
