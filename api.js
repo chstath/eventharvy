@@ -13,10 +13,37 @@ var router = exports.router = function (app) {
           response.setEncoding('utf8');
           response.on('data', function (chunk) {
             console.log('BODY: ' + chunk);
+            sendResult(res);
           });
         });
 
     });
 
+};
+
+// Helper function to send the result.
+var sendResult = function (res, data, extraHeaders) {
+    var headers = {'Content-Type': 'application/json'};
+    if (extraHeaders)
+        for (var h in extraHeaders)
+            headers[h] = extraHeaders[h];
+	res.writeHead(200, headers);
+	if (data)
+		res.end(data);
+	else
+		res.end();
+};
+
+// Helper function to send the result in error cases.
+var sendError = function (res, status, data, extraHeaders) {
+    var headers = {'Content-Type': 'text/plain'};
+    if (extraHeaders)
+        for (var h in extraHeaders)
+            headers[h] = extraHeaders[h];
+	res.writeHead(status, headers);
+	if (data)
+		res.end(data);
+	else
+		res.end();
 };
 
