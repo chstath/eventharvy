@@ -5,6 +5,7 @@ var sources = [
 //        name: 'OpenCoffee',
 //        port: 80,
 //        host: 'www.google.com',
+//        type: 'ical',
 //        method: 'GET',
 //        path: '/calendar/feeds/g66phdocfd8cmc0bssii0dfk6g%40group.calendar.google.com/public/full?alt=json'
 //    },
@@ -12,6 +13,7 @@ var sources = [
 //        name: 'Bike Events',
 //        port: 80,
 //        host: 'www.google.com',
+//        type: 'ical',
 //        method: 'GET',
 //        path: '/calendar/feeds/f6hvf5f7nuqh5spg4ntta04dqg@group.calendar.google.com/public/full?alt=json'
 //    },
@@ -19,6 +21,7 @@ var sources = [
 //        name: 'Olympiakos',
 //        port: 80,
 //        host: 'www.google.com',
+//        type: 'ical',
 //        method: 'GET',
 //        path: '/calendar/feeds/gree_6449_%4flympiakos#sports@group.v.calendar.google.com/public/full?alt=json'
 //    },
@@ -30,7 +33,7 @@ var sources = [
         method: 'GET',
         path: '/?lang=el&land=gr&ins=ath&typ=v'
     },
- 
+
 ];
 
 // The router for the api requests.
@@ -95,7 +98,7 @@ var pollSingleSource = function (sourceIndex) {
         response.on('data', function (chunk) {
  //           console.log('BODY: ' + chunk);
             rssData += chunk;
-      
+
 //        if (res)
 //            sendResult(res);
         });
@@ -131,5 +134,9 @@ var sendError = function (res, status, data, extraHeaders) {
 		res.end(data);
 	else
 		res.end();
+};
+
+var createIcal = function (event) {
+    return require("icalendar").makeICalendar(event);
 };
 
