@@ -4,8 +4,8 @@ var router = exports.router = function (app) {
 	app.get('/init', function (req, res, next) {
         var http = require('http');
         var google = http.createClient(80, 'www.google.com');
-        var request = google.request('GET', '/',
-          {'host': 'http://www.google.com/calendar/feeds/g66phdocfd8cmc0bssii0dfk6g%40group.calendar.google.com/public/full?alt=json'});
+        var request = google.request('GET', '/calendar/feeds/g66phdocfd8cmc0bssii0dfk6g%40group.calendar.google.com/public/full?alt=json',
+          {'host': 'www.google.com'});
         request.end();
         request.on('response', function (response) {
           console.log('STATUS: ' + response.statusCode);
