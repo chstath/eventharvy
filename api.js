@@ -7,6 +7,13 @@ var sources = [
         path: '/calendar/feeds/g66phdocfd8cmc0bssii0dfk6g%40group.calendar.google.com/public/full?alt=json'
     },
     {
+        name: 'Bike Events',
+        port: 80,
+        host: 'www.google.com',
+        method: 'GET',
+        path: '/calendar/feeds/f6hvf5f7nuqh5spg4ntta04dqg@group.calendar.google.com/public/full?alt=json'
+    },
+    {
         name: 'Olympiakos',
         port: 80,
         host: 'www.google.com',
