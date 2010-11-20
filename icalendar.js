@@ -1,7 +1,7 @@
 /* Construct an iCalendar with an event object.
    @param  event  (object) the event details
    @return  (string) the iCalendar definition */
-var makeICalendar = function (event) {
+var makeICalendar = exports.makeICalendar = function (event) {
 	var limit75 = function(text) {
 		var out = '';
 		while (text.length > 75) {

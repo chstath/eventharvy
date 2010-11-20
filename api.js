@@ -137,14 +137,7 @@ var sendError = function (res, status, data, extraHeaders) {
 		res.end();
 };
 
-var createIcal = function () {
-    var jsdom  = require("jsdom"),
-        window = jsdom.jsdom().createWindow();
-    jsdom.jQueryify(window, "jquery.js", function() {
-      window.jQuery('body').append("<div class='testing'>Hello World, It works!</div>");
-      console.log(window.jQuery(".testing").text());
-    });
-
-
+var createIcal = function (event) {
+    return require("icalendar").makeICalendar(event);
 };
 
