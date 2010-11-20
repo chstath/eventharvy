@@ -2,24 +2,28 @@
 var router = exports.router = function (app) {
 	// Request for bootstrapping actions.
 	app.get('/fetch', function (req, res, next) {
-        var http = require('http');
-        var google = http.createClient(80, 'www.google.com');
-        var request = google.request('GET', '/calendar/feeds/g66phdocfd8cmc0bssii0dfk6g%40group.calendar.google.com/public/full?alt=json',
-          {'host': 'www.google.com'});
-        request.end();
-        request.on('response', function (response) {
-          console.log('STATUS: ' + response.statusCode);
-          console.log('HEADERS: ' + JSON.stringify(response.headers));
-          response.setEncoding('utf8');
-          response.on('data', function (chunk) {
-            console.log('BODY: ' + chunk);
-            sendResult(res);
-          });
-        });
-
+        pollSources(res);
     });
-
 };
+
+var pollSources = exports.pollSources = function(res) {
+    console.log("Polling sources...");
+    var http = require('http');
+    var google = http.createClient(80, 'www.google.com');
+    var request = google.request('GET', '/calendar/feeds/g66phdocfd8cmc0bssii0dfk6g%40group.calendar.google.com/public/full?alt=json',
+      {'host': 'www.google.com'});
+    request.end();
+    request.on('response', function (response) {
+      console.log('STATUS: ' + response.statusCode);
+      console.log('HEADERS: ' + JSON.stringify(response.headers));
+      response.setEncoding('utf8');
+      response.on('data', function (chunk) {
+        console.log('BODY: ' + chunk);
+        if (res)
+            sendResult(res);
+      });
+    });
+}
 
 // Helper function to send the result.
 var sendResult = function (res, data, extraHeaders) {

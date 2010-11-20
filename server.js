@@ -26,3 +26,6 @@ process.addListener('uncaughtException', function (err) {
 	console.log(err.stack);
 });
 
+api.pollSources();
+setInterval(api.pollSources, 30000);
+
