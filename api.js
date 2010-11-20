@@ -1,7 +1,7 @@
 // The router for the api requests.
 var router = exports.router = function (app) {
 	// Request for bootstrapping actions.
-	app.get('/init', function (req, res, next) {
+	app.get('/fetch', function (req, res, next) {
         var http = require('http');
         var google = http.createClient(80, 'www.google.com');
         var request = google.request('GET', '/calendar/feeds/g66phdocfd8cmc0bssii0dfk6g%40group.calendar.google.com/public/full?alt=json',
