@@ -1,4 +1,4 @@
-var rss = require('./node-rss/node-rss');
+var htmlparser = require("htmlparser");
 var sources = [
 //    {
 //        name: 'OpenCoffee',
@@ -24,7 +24,7 @@ var sources = [
      {
         name: 'Goethe',
         port: 80,
-        host: 'http://rss.goethe.de',
+        host: 'rss.goethe.de',
         type: 'rss',
         method: 'GET',
         path: '/?lang=el&land=gr&ins=ath&typ=v'
@@ -50,39 +50,49 @@ var pollSingleSource = function (sourceIndex) {
     if (sourceIndex >= sources.length)
         return;
     console.log("Polling source " + sourceIndex + " " + sources[sourceIndex].name);
-    if (sources[sourceIndex].type == 'rss') {
-        rss.parseURL(sources[sourceIndex].host + sources[sourceIndex].path, function(articles) {
-            console.log(articles.length);
-            for(i=0; i<articles.length; i++) {
-                console.log("Article: "+i+", "+
-                articles[i].title+"\n"+
-                articles[i].link+"\n"+
-                articles[i].description+"\n"+
-                articles[i].content
-                );
+    var rssHandler = new htmlparser.RssHandler(function (error, dom) {
+        if (error) {
+            console.log(error);
+            throw err;
+        }
+        else {
+            for (var i=0; i<dom.items.length; i++) {
+                var item = dom.items[i];
+                var title = item.title.substring(8, item.title.length-2);
+                var link = item.link.substring(8, item.link.length-2);;
+                var description = item.description.substring(8, item.description.length-2);;
+                var pubDate = item.pubDate;
+                console.log(title);
+                console.log(link);
+                console.log(description);
+                console.log(pubDate);
             }
-        });    
-    }
-    else {
-        var http = require('http');
-        var client = http.createClient(80, sources[sourceIndex].host);
-        var request = client.request('GET', sources[sourceIndex].path,
-          {'host': sources[sourceIndex].host});
-        request.end();
-        request.on('response', function (response) {
-          console.log('STATUS: ' + response.statusCode);
-          console.log('HEADERS: ' + JSON.stringify(response.headers));
-          response.setEncoding('utf8');
-          response.on('data', function (chunk) {
-          console.log('BODY: ' + chunk);
-          
-    //        if (res)
-    //            sendResult(res);
-          });
-          sourceIndex++;
-          pollSingleSource(sourceIndex)
+        }
+    });
+    var rss = new htmlparser.Parser(rssHandler);
+    var http = require('http');
+    var client = http.createClient(80, sources[sourceIndex].host);
+    var request = client.request('GET', sources[sourceIndex].path,
+      {'host': sources[sourceIndex].host});
+    request.end();
+    var rssData = '';
+    request.on('response', function (response) {
+        console.log('STATUS: ' + response.statusCode);
+        console.log('HEADERS: ' + JSON.stringify(response.headers));
+        response.setEncoding('utf8');
+        response.on('data', function (chunk) {
+ //           console.log('BODY: ' + chunk);
+            rssData += chunk;
+      
+//        if (res)
+//            sendResult(res);
         });
-    }
+        response.on('end', function () {
+            rss.parseComplete(rssData);
+            sourceIndex++;
+            pollSingleSource(sourceIndex)
+        });
+    });
 }
 
 // Helper function to send the result.
