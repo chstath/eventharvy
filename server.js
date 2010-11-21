@@ -1,6 +1,6 @@
 var express = require('express'),
 	api = require('./api'),
-	port = parseInt(process.env.PORT) || 8000,
+	port = parseInt(process.env.PORT) || 80,
     connect = require('connect');
 
 api.pollSources();
