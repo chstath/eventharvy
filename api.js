@@ -36,6 +36,9 @@ var sources = [
 
 ];
 
+// The accumulated events.
+var events = exports.events = [];
+
 // The router for the api requests.
 var router = exports.router = function (app) {
 	// Request for bootstrapping actions.
@@ -103,6 +106,7 @@ var pollSingleSource = function (sourceIndex) {
                 //event.recurrence = newItem.;
                 event.start = start; //newItem.pubDate;
                 //event.end = (end && !isNaN(end)) || '';
+                events.push(event);
                 result = createIcal(event);
                 console.log(result);
             }

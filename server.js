@@ -3,6 +3,9 @@ var express = require('express'),
 	port = parseInt(process.env.PORT) || 8000,
     connect = require('connect');
 
+api.pollSources();
+setInterval(api.pollSources, 120000);
+
 var app = module.exports = express.createServer();
 
 // Configuration
@@ -17,11 +20,11 @@ app.configure(function(){
 });
 
 app.configure('development', function(){
-    app.use(connect.errorHandler({ dumpExceptions: true, showStack: true })); 
+    app.use(connect.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function(){
-   app.use(connect.errorHandler()); 
+   app.use(connect.errorHandler());
 });
 
 // Routes
@@ -29,7 +32,7 @@ app.configure('production', function(){
 app.get('/', function(req, res){
     res.render('index.jade', {
         locals: {
-            title: 'Express'
+            title: 'eventharvy'
         }
     });
 });
@@ -37,8 +40,8 @@ app.get('/', function(req, res){
 app.get('/fetch', function (req, res) {
     res.render('fetch.jade', {
         locals: {
-            title: 'Feed',
-            body:'lalalal'
+            title: 'Events',
+            events: api.events
         }
     });
 });
@@ -59,7 +62,4 @@ console.log('Eventharvy server running at http://127.0.0.1:' + port);
 process.addListener('uncaughtException', function (err) {
 	console.log(err.stack);
 });
-
-api.pollSources();
-setInterval(api.pollSources, 120000);
 
