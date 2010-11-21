@@ -106,13 +106,21 @@ var pollSingleSource = function (sourceIndex) {
                 //event.location = newItem.;
                 //event.recurrence = newItem.;
                 event.start = start; //newItem.pubDate;
+                event.src = sources[sourceIndex].host + sources[sourceIndex].path;
                 //event.end = (end && !isNaN(end)) || '';
-                events.push(event);
-                result = createIcal(event);
-                console.log(result);
+                var found = false;
+                events.forEach(function(e) {
+                  if (e.src == event.src && e.url == event.url)
+                     found = true;
+                });
+                if (!found) {
+                  events.push(event);
+                  result = createIcal(event);
+                  console.log(result);
+                }
             }
             var result=jsonxml.obj_to_xml(item);
-            console.log(newItem);
+            //console.log(newItem);
         }
     });
     var rss = new htmlparser.Parser(rssHandler);
