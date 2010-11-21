@@ -1,5 +1,6 @@
 var htmlparser = require("htmlparser");
-var jsonxml = require('jsontoxml');
+var mongo = require('mongodb');
+
 var sources = [
 //    {
 //        name: 'OpenCoffee',
@@ -48,19 +49,31 @@ var router = exports.router = function (app) {
 };
 
 var pollSources = exports.pollSources = function(res) {
-    console.log("Polling sources...");
-    var sourceIndex = 0;
-    pollSingleSource(sourceIndex);
+   console.log("Polling sources...");
+   var sourceIndex = 0;
+   var db = new mongo.Db('eventharvy', new mongo.Server('flame.mongohq.com', 27084, {}), {});
+   db.open(function () {
+      db.authenticate('harvy', 'harvy', function (err, authOk) {
+         db.collection('events', function (err, collection) {
+            if (err) {
+               throw err;
+            }
+   
+            pollSingleSource(sourceIndex, db, collection);
+         });
+      });
+   });
 }
 
-var pollSingleSource = function (sourceIndex) {
-    if (sourceIndex >= sources.length)
+var pollSingleSource = function (sourceIndex, db, collection) {
+    if (sourceIndex >= sources.length) {
+         db.close();
         return;
+    }
     console.log("Polling source " + sourceIndex + " " + sources[sourceIndex].name);
     var rssHandler = new htmlparser.RssHandler(function (error, dom) {
         if (error) {
-            console.log(error);
-            throw err;
+            throw error;
         }
         else {
             for (var i=0; i<dom.items.length; i++) {
@@ -80,17 +93,20 @@ var pollSingleSource = function (sourceIndex) {
                     date: eventDate,
                     time: eventTime,
                     description: description,
-                    pubDate: pubDate
+                    pubDate: pubDate,
+                    link: link,
+                    src: sources[sourceIndex].host + sources[sourceIndex].path
                 };
+               // console.log(newItem);
 
                 // Generate event time.
                 var dateElems = eventDate.split('/');
-                console.log('dateElems: ' + dateElems);
+                //console.log('dateElems: ' + dateElems);
                 var timeElems = eventTime.split('-');
-                console.log('timeElems: ' + timeElems);
+                //console.log('timeElems: ' + timeElems);
                 var startTimelems, start;
                 startTimeElems = timeElems[0].split(':');
-                console.log('startTimeElem[0]: ' + isNaN(startTimeElems[0]));
+                //console.log('startTimeElem[0]: ' + isNaN(startTimeElems[0]));
                 if (isNaN(startTimeElems[0]))
                     start = new Date(dateElems[2], dateElems[1], dateElems[0]);
                 else
@@ -106,13 +122,24 @@ var pollSingleSource = function (sourceIndex) {
                 //event.location = newItem.;
                 //event.recurrence = newItem.;
                 event.start = start; //newItem.pubDate;
+                event.src = newItem.src;
                 //event.end = (end && !isNaN(end)) || '';
                 events.push(event);
                 result = createIcal(event);
-                console.log(result);
+           //     console.log(result);
+               collection.find({src: event.src, url: event.url}, {}, function (err, cursor) {
+                  cursor.toArray(function (err, docs) {
+                     if (docs.length == 0) {
+                        collection.insert(event, function (err, docs) {
+                           if (err) {
+                              throw err;
+                           }
+                           console.log('Item inserted ...');
+                        });
+                     }
+                  });
+               });
             }
-            var result=jsonxml.obj_to_xml(item);
-            console.log(newItem);
         }
     });
     var rss = new htmlparser.Parser(rssHandler);
@@ -127,16 +154,13 @@ var pollSingleSource = function (sourceIndex) {
         console.log('HEADERS: ' + JSON.stringify(response.headers));
         response.setEncoding('utf8');
         response.on('data', function (chunk) {
- //           console.log('BODY: ' + chunk);
             rssData += chunk;
 
-//        if (res)
-//            sendResult(res);
         });
         response.on('end', function () {
             rss.parseComplete(rssData);
             sourceIndex++;
-            pollSingleSource(sourceIndex)
+            pollSingleSource(sourceIndex, db, collection);
         });
     });
 }
