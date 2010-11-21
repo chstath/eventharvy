@@ -97,6 +97,7 @@ var pollSingleSource = function (sourceIndex) {
                     start = new Date(dateElems[2], dateElems[1], dateElems[0], startTimeElems[0], startTimeElems[1]);
                 // Generate iCalendar version.
                 var event = {};
+                event.id = 'event-' + i;
                 event.url = link;
                 //event.contact = newItem.;
                 event.title = newItem.title;
