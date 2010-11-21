@@ -1,4 +1,24 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+  font: 11px "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+}
+li {
+  list-style-type: none;
+}
+.eventdiv {
+  background: lightgrey;
+}
+.event {
+  font: 18px "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+}
+.title {
+  font: 16px "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+  font-weight: bold;
+}
+.description {
+  font: 12px "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+}
+.date {
+  font: 11px "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+  font-style: italic;
 }
