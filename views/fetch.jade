@@ -1,4 +1,7 @@
 h1= title
 - each event in events
-  #event
-    p #{event.title}
+  div.eventdiv
+  ul.event
+    li.title #{event.title}
+    li.description #{event.description}
+    li.date #{event.start}
